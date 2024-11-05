@@ -1,6 +1,7 @@
 "use client";
 
 import { AuthModal } from "@/components/auth/auth-modal";
+import { ThemeSwitch } from "@/components/theme-switch";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -85,6 +86,7 @@ export function Header() {
                 </AuthModal>
               </>
             )}
+            <ThemeSwitch />
           </div>
         </div>
       </div>
