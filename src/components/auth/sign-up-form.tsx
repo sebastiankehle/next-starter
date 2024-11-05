@@ -1,11 +1,21 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { SignUpInput, signUpSchema } from "@/lib/validations/auth";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 
 interface SignUpFormProps {
   onSuccess: () => void;
@@ -16,17 +26,20 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
   const supabase = createClientComponentClient();
   const { toast } = useToast();
 
-  async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  const form = useForm<SignUpInput>({
+    resolver: zodResolver(signUpSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  async function onSubmit(data: SignUpInput) {
     setIsLoading(true);
 
-    const formData = new FormData(event.currentTarget);
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
-
     const { error } = await supabase.auth.signUp({
-      email,
-      password,
+      email: data.email,
+      password: data.password,
       options: {
         emailRedirectTo: `${location.origin}/auth/callback`,
       },
@@ -50,24 +63,46 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4 py-2 pb-4">
-      <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
-        <Input
-          id="email"
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-4 py-2 pb-4"
+      >
+        <FormField
+          control={form.control}
           name="email"
-          type="email"
-          placeholder="m@example.com"
-          required
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="m@example.com"
+                  type="email"
+                  disabled={isLoading}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
-        <Input id="password" name="password" type="password" required />
-      </div>
-      <Button className="w-full" type="submit" disabled={isLoading}>
-        {isLoading ? "Creating account..." : "Create account"}
-      </Button>
-    </form>
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <Input type="password" disabled={isLoading} {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button className="w-full" type="submit" disabled={isLoading}>
+          {isLoading ? "Creating account..." : "Create account"}
+        </Button>
+      </form>
+    </Form>
   );
 }

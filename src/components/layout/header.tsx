@@ -32,13 +32,14 @@ export function Header() {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
+    window.location.href = "/?auth=signout";
     toast({
       title: "Signed out successfully",
     });
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="fixed left-0 right-0 top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 max-w-screen-2xl items-center px-4 md:px-8">
         <div className="flex">
           <Link href="/" className="mr-6 flex items-center space-x-2">
