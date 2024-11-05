@@ -1,3 +1,5 @@
+import { Header } from "@/components/layout/header";
+import { Toaster } from "@/components/ui/toaster";
 import type { Metadata } from "next";
 
 import "./globals.css";
@@ -14,7 +16,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <div className="relative flex min-h-screen flex-col">
+          <Header />
+          <main className="flex-1">{children}</main>
+          <Toaster />
+        </div>
+      </body>
     </html>
   );
 }
